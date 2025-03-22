@@ -79,16 +79,12 @@ async def forecasts():
     Generates a linear model that is quick enough to do it in the API call.
     Reference predict.forecast_storm_with_great_circle
     '''
-    data = pd.DataFrame(await get_live_storms())
-    forecasts = {}
-    for storm in set(data['id']):
-        entries = data[data['id'] == storm]
-        entries['time'] = pd.to_datetime(entries['time'])
-        sorted_entries = entries.sort_values(by='time')
-        forecast = predict.forecast_storm_with_great_circle(sorted_entries.to_dict(orient='records'))
-        forecasts[storm] = forecast
-
-    return forecasts
+    gc.collect()
+    data = db.query("SELECT * FROM forecasts_live")
+    data['time'] = data['time'].astype(str)  # Convert 'time' column to string
+    data = data.rename(columns={'int': 'wind_speed'})  # Rename 'int' column to 'wind_speed'
+    result = {storm : data[data['id'] == storm].to_dict(orient='records') for storm in set(data['id'])}
+    return result
 #@app.get("/forecast-live-storms")
 def forecast_live_storms(model='all'):
     """
