@@ -5,6 +5,7 @@ import pandas as pd
 import logging
 import requests
 import json
+import datetime
 from datetime import timedelta
 from datetime import timezone
 import config
@@ -13,6 +14,7 @@ import pandas as pd
 from sklearn.linear_model import LinearRegression
 import numpy as np
 from datetime import timedelta
+import db
 
 def download_file(url) :
     response = requests.get(url)
@@ -408,3 +410,71 @@ def forecast_storm_with_great_circle(data):
             break
     
     return forecasts
+
+def global_forecast():
+    '''
+    Parameters
+    ----------
+    data dictionary
+        The global live storms and their data
+
+    Table: forecasts_live
+        Columns:
+        - model: The unique identifier for the model
+        - id: The storm ID
+        - forecast_time: The time in the future, relative to the time variable, in ISO 8601
+        - time: Time of the observation in ISO 8601 time format e.g. +6 hours and this is the starting value
+        - trans_time: Transaction time of when the observation was requested or ingested
+        - hash: The hash ID for the observation hierarchy
+        - lat: The latitude ISO 6709
+        - lon: The longitude ISO 6709
+        - int: The wind intensity in knots
+        - metadata: JSON object of arbitrary size or structure
+    '''
+    data = pd.DataFrame(requests.get(config.live_storms_api).json())
+    
+    forecasts = {}
+    for storm in set(data['id']):
+        entries = data[data['id'] == storm]
+        entries['time'] = pd.to_datetime(entries['time'])
+        sorted_entries = entries.sort_values(by='time')
+        forecast = forecast_storm_with_great_circle(sorted_entries.to_dict(orient='records'))
+        forecast['time'] = sorted_entries.iloc[-1]['time'] # most recent live data time
+        forecasts[storm] = forecast
+    
+    # vectorize and archive data in the raw form
+    vector = update.upload_hash(forecasts)
+
+    # for updating the database, we need to make sure the data hasn't already been processed (is unique)
+    if vector['unique']:
+        # Post process for the expected row values of the forecasts_live table
+        forecast_table = [{
+                'model': storm['source'],
+                'id': storm,
+                'forecast_time': storm['forecast_time'],
+                'time': storm['time'],
+                'trans_time': datetime.datetime.now().isoformat(),
+                'hash': vector['hash'],
+                'lat': storm['lat'],
+                'lon': storm['lon'],
+                'int': storm['wind_speed']
+            } for storm in forecasts]
+        # process database and SQL for archiving forecasts
+        table_name = config.forecasts_archive_table
+        engine = db.get_engine(table_name)
+        metadata = update.MetaData()
+        metadata.reflect(bind=engine)
+        table = metadata.tables[table_name]
+        db.query(q = (table.insert(), forecast_table), write = True)
+        # process database and SQL for live forecasts
+        table_name = config.forecasts_live_table
+        engine = db.get_engine(table_name)
+        metadata = update.MetaData()
+        metadata.reflect(bind=engine)
+        table = metadata.tables[table_name]
+        # reset live table
+        db.query(q = (f'DELETE FROM {table_name}',), write = True)
+        db.query(q = (table.insert(), forecast_table), write = True)
+
+
+    
