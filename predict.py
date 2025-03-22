@@ -379,17 +379,32 @@ def forecast_storm_with_great_circle(data):
         # Predict the distance and wind speed at each forecast time
         predicted_distance = distance_model.predict([[t]])[0]
         wind_speed_forecast = wind_model.predict([[t]])[0]
+        forecast_time = df['time'].min() + timedelta(seconds=t)
+        
+        # Check if it's a valid forecast
+        if wind_speed_forecast < 0 : # wind speed is negative
+            slope = wind_model.coef_[0]
+            intercept = wind_model.intercept_
+            zero_time = -intercept/slope
+            # redefine variables to valid forecast
+            forecast_time = df['time'].min() + timedelta(seconds=zero_time)
+            wind_speed_forecast = wind_model.predict([[zero_time]])[0]
+            # print some logs
+            print(str(wind_speed_forecast))
+            print(f"f(x) = {slope}x + {intercept}, f({zero_time}) = {wind_speed_forecast}")
         
         # Use the distance and bearing to calculate the new lat/lon
         forecast_lat, forecast_lon = destination_point(recent_data['lat'], recent_data['lon'], angle, predicted_distance)
-        
+        # finalize data structure
         forecast = {
-            'forecast_time': df['time'].min() + timedelta(seconds=t),
+            'forecast_time': forecast_time,
             'lat': forecast_lat,
             'lon': forecast_lon,
             'wind_speed': wind_speed_forecast,
             'source': 'Linear Model by fluids'
         }
         forecasts.append(forecast)
+        if wind_speed_forecast < 1: # storm has dissapated (wind speed is 0)
+            break
     
     return forecasts
