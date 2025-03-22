@@ -399,7 +399,8 @@ def forecast_storm_with_great_circle(data):
         forecast_lat, forecast_lon = destination_point(recent_data['lat'], recent_data['lon'], angle, predicted_distance)
         # finalize data structure
         forecast = {
-            'forecast_time': forecast_time,
+            'forecast_time': forecast_time.isoformat(),
+            'time': recent_data['time'].isoformat(),
             'lat': forecast_lat,
             'lon': forecast_lon,
             'wind_speed': wind_speed_forecast,
@@ -436,41 +437,44 @@ def global_forecast():
     forecasts = {}
     for storm in set(data['id']):
         entries = data[data['id'] == storm]
-        entries['time'] = pd.to_datetime(entries['time'])
-        sorted_entries = entries.sort_values(by='time')
-        forecast = forecast_storm_with_great_circle(sorted_entries.to_dict(orient='records'))
-        forecast['time'] = sorted_entries.iloc[-1]['time'] # most recent live data time
+        forecast = forecast_storm_with_great_circle(entries.to_dict(orient='records'))
+        print(forecast)
         forecasts[storm] = forecast
     
     # vectorize and archive data in the raw form
     vector = update.upload_hash(forecasts)
 
     # for updating the database, we need to make sure the data hasn't already been processed (is unique)
-    if vector['unique']:
+    print(f"Unique?: {vector['unique']}")
+    if vector['unique'] :
         # Post process for the expected row values of the forecasts_live table
-        forecast_table = [{
-                'model': storm['source'],
-                'id': storm,
-                'forecast_time': storm['forecast_time'],
-                'time': storm['time'],
-                'trans_time': datetime.datetime.now().isoformat(),
-                'hash': vector['hash'],
-                'lat': storm['lat'],
-                'lon': storm['lon'],
-                'int': storm['wind_speed']
-            } for storm in forecasts]
+        forecast_table =[]
+        for forecast in forecasts.keys():
+            print(forecast)
+            for storm in forecasts[forecast]:
+                print(storm)
+                forecast_table.append({
+                    'model': storm['source'],
+                    'id': forecast,
+                    'forecast_time': storm['forecast_time'],
+                    'time': storm['time'],
+                    'trans_time': datetime.datetime.now().isoformat(),
+                    'hash': vector['hash'],
+                    'lat': storm['lat'],
+                    'lon': storm['lon'],
+                    'int': float(storm['wind_speed'])
+                })
         # process database and SQL for archiving forecasts
-        table_name = config.forecasts_archive_table
-        engine = db.get_engine(table_name)
+        engine = db.get_engine()
         metadata = update.MetaData()
         metadata.reflect(bind=engine)
-        table = metadata.tables[table_name]
+        table = metadata.tables[config.forecasts_archive_table]
         db.query(q = (table.insert(), forecast_table), write = True)
         # process database and SQL for live forecasts
-        table_name = config.forecasts_live_table
-        engine = db.get_engine(table_name)
+        engine = db.get_engine()
         metadata = update.MetaData()
         metadata.reflect(bind=engine)
+        table_name = config.forecasts_live_table
         table = metadata.tables[table_name]
         # reset live table
         db.query(q = (f'DELETE FROM {table_name}',), write = True)

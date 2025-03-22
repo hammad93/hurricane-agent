@@ -8,3 +8,7 @@ psycopg2-binary
 httpx
 sqlalchemy
 lxml
+bs4
+requests
+pandas
+scikit-learn

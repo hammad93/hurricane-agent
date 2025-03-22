@@ -44,7 +44,7 @@ def connection_string(database):
     auth = credentials_df.iloc[1]
     return f"postgresql://{auth['user']}:{auth['pass']}@{auth['host']}:{int(auth['port'])}/{database}"
 
-def get_engine(database):
+def get_engine(database = 'hurricane_live'):
     '''
     Returns a connection engine from SQLAlchemy
     '''
