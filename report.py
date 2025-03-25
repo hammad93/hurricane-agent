@@ -156,9 +156,12 @@ def send_email() :
 
 command_line = False if len(sys.argv) < 2 else sys.argv[1] # e.g. python report.py push
 if global_data['unique'] or command_line == 'push': # command line to push the email even if not new
-  #test.ai_pipeline()
+  # Run forecasts
+  predict.global_forecast()
+  # Send email
   BODY_HTML = send_email()
   top_of_the_hour = datetime.datetime.now().replace(minute=0, second=0, microsecond=0).strftime("%Y-%m-%d %H")
+  # Create blog post
   wp.create_post(
     f'fluids Hourly Weather Report: {top_of_the_hour}00 Zulu',
     BODY_HTML
