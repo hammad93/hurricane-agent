@@ -344,7 +344,11 @@ def update_global():
     # pull in RAMMB data
     rammb = update_global_rammb()
     # pull in NOAA data
-    noaa = update_global_hfsa()
+    try :
+        noaa = update_global_hfsa()
+    except Exception as e:
+        print(f'Error, HFSA data not parsed:\n{e}')
+        noaa = False
     return {'RAMMB': rammb, 'NOAA': noaa}
 
 def data_to_hash(data) :
