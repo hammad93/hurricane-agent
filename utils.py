@@ -210,7 +210,8 @@ def web_screenshot(url = 'http://fluids.ai:7000/', out = 'screenshot.png'):
   driver.quit()
 
 
-def send_email(global_data,
+def send_email(data,
+               global_data,
                SENDER,
                SENDERNAME,
                USERNAME_SMTP,
@@ -223,6 +224,8 @@ def send_email(global_data,
   This function sends the email for the hourly agent
   Parameters
   ----------
+  data
+
   global_data
 
   SENDER
@@ -239,7 +242,7 @@ def send_email(global_data,
 
   RECIPIENTS
     This is email is configured with a mailing list.
-    
+
   SUBJECT
   '''
   # The email body for recipients with non-HTML email clients.
