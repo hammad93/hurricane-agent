@@ -35,7 +35,8 @@ if global_data['unique'] or command_line == 'push': # command line to push the e
   # Run forecasts
   predict.global_forecast()
   # Send email
-  BODY_HTML = agent.hourly.send_email(global_data, SENDER, SENDERNAME, USERNAME_SMTP, PASSWORD_SMTP, HOST, PORT)
+  API = config.current_forecasts_api
+  BODY_HTML = utils.send_email(global_data, predict, API, SENDER, SENDERNAME, USERNAME_SMTP, PASSWORD_SMTP, HOST, PORT)
   top_of_the_hour = datetime.datetime.now().replace(minute=0, second=0, microsecond=0).strftime("%Y-%m-%d %H")
   # Create blog post
   wp.create_post(
