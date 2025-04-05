@@ -35,7 +35,8 @@ if global_data['unique'] or command_line == 'push': # command line to push the e
   predict.global_forecast()
   # Send email
   API = config.current_forecasts_api
-  BODY_HTML = utils.send_email(data, global_data, SENDER, SENDERNAME, USERNAME_SMTP, PASSWORD_SMTP, HOST, PORT)
+  BODY_TEXT, BODY_HTML = agent.hourly.create_report(data, global_data, predict, config.current_forecasts_api)
+  BODY_HTML = utils.send_email(BODY_TEXT, BODY_HTML, SENDER, SENDERNAME, USERNAME_SMTP, PASSWORD_SMTP, HOST, PORT, RECIPIENTS = 'hourly@fluids.ai', SUBJECT = 'HURAIM Hourly Reports')
   top_of_the_hour = datetime.datetime.now().replace(minute=0, second=0, microsecond=0).strftime("%Y-%m-%d %H")
   # Create blog post
   wp.create_post(

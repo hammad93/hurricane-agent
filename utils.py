@@ -212,23 +212,23 @@ def web_screenshot(url = 'http://fluids.ai:7000/', out = 'screenshot.png'):
   driver.quit()
 
 
-def send_email(data,
-               global_data,
+def send_email(BODY_TEXT,
+               BODY_HTML,
                SENDER,
                SENDERNAME,
                USERNAME_SMTP,
                PASSWORD_SMTP,
                HOST,
                PORT,
-               RECIPIENTS= 'hourly@fluids.ai',
-               SUBJECT = 'HURAIM Hourly Reports') :
+               RECIPIENTS,
+               SUBJECT) :
   '''
   This function sends the email for the hourly agent
   Parameters
   ----------
-  data
+  BODY_TEXT
 
-  global_data
+  BODY_HTML
 
   SENDER
 
@@ -247,8 +247,6 @@ def send_email(data,
 
   SUBJECT
   '''
-  BODY_TEXT, BODY_HTML = agent.hourly.create_report(data, global_data, predict, config.current_forecasts_api)
-
   # Create message container - the correct MIME type is multipart/alternative.
   msg = MIMEMultipart('alternative')
   msg['Subject'] = SUBJECT
