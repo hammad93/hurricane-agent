@@ -98,6 +98,7 @@ def forecasts(API):
   </body>
   </html>
               """
+  return BODY_HTML
 
 def global_report(global_data):
   '''
