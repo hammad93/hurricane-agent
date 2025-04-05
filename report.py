@@ -1,6 +1,5 @@
 import pandas as pd
 import logging
-import agent.hourly
 import predict
 import update
 import datetime
