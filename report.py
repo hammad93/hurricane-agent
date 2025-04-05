@@ -10,6 +10,7 @@ import test
 import wp
 import sys
 import agent
+import db
 
 # Setup logs
 logging.basicConfig(filename='report.log', level=logging.DEBUG)
@@ -33,6 +34,7 @@ command_line = False if len(sys.argv) < 2 else sys.argv[1] # e.g. python report.
 if global_data['unique'] or command_line == 'push': # command line to push the email even if not new
   # Run forecasts
   predict.global_forecast()
+  ## HOURLY AGENT
   # Send email
   BODY_TEXT, BODY_HTML = agent.hourly.create_report(data, global_data, predict, config.current_forecasts_api)
   BODY_HTML = utils.send_email(BODY_TEXT, BODY_HTML, SENDER, SENDERNAME, USERNAME_SMTP, PASSWORD_SMTP, HOST, PORT, RECIPIENTS = 'hourly@fluids.ai', SUBJECT = 'HURAIM Hourly Reports')
@@ -42,6 +44,10 @@ if global_data['unique'] or command_line == 'push': # command line to push the e
     f'fluids Hourly Weather Report: {top_of_the_hour}00 Zulu',
     BODY_HTML
     )
+  ## DAILY AGENT
+  with open(config.daily_ingest_sql_path) as file:
+    query = file.read()
+  daily_data = db.query(query)
 else :
   print('Data ingested is not new.')
 
