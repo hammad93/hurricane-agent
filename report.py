@@ -28,26 +28,31 @@ class Report(object):
     self.HOST = self.credentials['host']
     self.PORT = int(self.credentials['port'])
   
-  def hourly(self, command =''):
-    # Execute data pipeline
-    data = update.nhc()
-    global_data = update.global_pipeline()
-    if global_data['unique'] or command == 'push': # command line to push the email even if not new
-      # Run forecasts
-      predict.global_forecast()
-      ## HOURLY AGENT
-      # Send email
-      hourly_report = agent.hourly.create_report(data, global_data, predict, config.current_forecasts_api)
-      utils.send_email(hourly_report['BODY_TEXT'],
-                      hourly_report['BODY_HTML'],
+  def email(self, report):
+    utils.send_email(report['BODY_TEXT'],
+                      report['BODY_HTML'],
                       self.SENDER,
                       self.SENDERNAME,
                       self.USERNAME_SMTP,
                       self.PASSWORD_SMTP,
                       self.HOST,
                       self.PORT,
-                      hourly_report['RECIPIENTS'],
-                      hourly_report['SUBJECT'])
+                      report['RECIPIENTS'],
+                      report['SUBJECT'])
+
+  def hourly(self, command =''):
+    # Execute data pipeline
+    data = update.nhc()
+    global_data = update.global_pipeline()
+    
+    # Send notification, minimizing duplicate emails
+    if global_data['unique'] or command == 'push': # command line to push the email even if not new
+      # Run forecasts
+      predict.global_forecast()
+      # Send email
+      hourly_report = agent.hourly.create_report(data, global_data, predict, config.current_forecasts_api)
+      self.email(hourly_report)
+      
       # Create blog post
       top_of_the_hour = datetime.datetime.now().replace(minute=0, second=0, microsecond=0).strftime("%Y-%m-%d %H")
       wp.create_post(f'fluids Hourly Weather Report: {top_of_the_hour}00 Zulu', hourly_report['BODY_HTML'])
