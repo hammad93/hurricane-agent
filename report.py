@@ -59,3 +59,7 @@ class Agent(object):
       query = file.read()
     daily_data = db.query(query)
     agent.daily.create_report(daily_data)
+
+if __name__ == '__main__':
+  agent = Agent()
+  fire.Fire(agent)
