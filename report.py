@@ -16,7 +16,7 @@ import fire
 # Setup logs
 logging.basicConfig(filename='report.log', level=logging.DEBUG)
 
-class Agent(object):
+class Report(object):
   def __init__(self):
     self.SENDER = 'husmani@fluids.ai'
     self.SENDERNAME = 'Hurricane AI'
@@ -61,5 +61,5 @@ class Agent(object):
     agent.daily.create_report(daily_data)
 
 if __name__ == '__main__':
-  agent = Agent()
+  agent = Report()
   fire.Fire(agent)
