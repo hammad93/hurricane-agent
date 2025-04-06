@@ -9,9 +9,11 @@ import utils
 import test
 import wp
 import sys
-import agent
 import db
 import fire
+
+from agent import hourly
+from agent import daily
 
 # Setup logs
 logging.basicConfig(filename='report.log', level=logging.DEBUG)
@@ -50,7 +52,7 @@ class Report(object):
       # Run forecasts
       predict.global_forecast()
       # Send email
-      hourly_report = agent.hourly.create_report(data, global_data, predict, config.current_forecasts_api)
+      hourly_report = hourly.create_report(data, global_data, predict, config.current_forecasts_api)
       self.email(hourly_report)
       
       # Create blog post
@@ -63,7 +65,7 @@ class Report(object):
     with open(config.daily_ingest_sql_path) as file:
       query = file.read()
     daily_data = db.query(query)
-    agent.daily.create_report(daily_data)
+    daily.create_report(daily_data)
 
 if __name__ == '__main__':
   agent = Report()
