@@ -7,3 +7,7 @@ def transform_data(data):
     data
     '''
     return pd.DataFrame(data)
+
+def create_report():
+    '''
+    '''
