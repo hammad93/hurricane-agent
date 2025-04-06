@@ -28,7 +28,7 @@ class Agent(object):
     self.HOST = self.credentials['host']
     self.PORT = int(self.credentials['port'])
   
-  def hourly(self, command = ''):
+  def hourly(self, command =''):
     # Execute data pipeline
     data = update.nhc()
     global_data = update.global_pipeline()

@@ -291,6 +291,7 @@ def update_global_rammb():
     page = requests.get(config['url'])
     soup = BeautifulSoup(page.text, 'html.parser')
     data = soup.findAll('div',attrs={'class':'basin_storms'})
+    print(f'RAMBB data: {data}')
     storms = []
     for div in data:
         links = div.findAll('a')

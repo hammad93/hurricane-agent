@@ -12,3 +12,4 @@ bs4
 requests
 pandas
 scikit-learn
+fire
