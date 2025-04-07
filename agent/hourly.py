@@ -128,4 +128,11 @@ def create_report(data, global_data, predict, forecasts_api):
   BODY_HTML += nhc_report(data, predict)
   BODY_HTML += global_report(global_data)
   BODY_HTML += forecasts(forecasts_api)
-  return BODY_TEXT, BODY_HTML
+
+  result = {
+     'BODY_TEXT': BODY_TEXT,
+     'BODY_HTML': BODY_HTML,
+     'RECIPIENTS': 'hourly@fluids.ai',
+     'SUBJECT': 'fluids hurricane agent: HURAIM Hourly Reports'
+  }
+  return result
