@@ -8,6 +8,6 @@ def transform_data(data):
     '''
     return pd.DataFrame(data)
 
-def create_report():
+def create_report(data):
     '''
     '''
