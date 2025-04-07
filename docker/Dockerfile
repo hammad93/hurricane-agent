@@ -12,7 +12,6 @@ RUN pip install -r /root/requirements.txt
 
 # Add git repository
 RUN git clone --single-branch --branch main https://github.com/hammad93/hurricane-deploy.git
-RUN git config --local --add remote.origin.fetch +refs/heads/*:refs/remotes/origin/*
 
 # Setup cron job
 RUN apt-get --allow-releaseinfo-change update && apt-get -y install cron
