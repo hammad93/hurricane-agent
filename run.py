@@ -83,9 +83,8 @@ async def reverse_proxy(local_url: str, request: Request):
         target_url = f"{local_url}{request.url.path}"
     
     # Forward the request with the same query parameters and headers
-    headers = request.headers.copy()
     async with httpx.AsyncClient() as client:
-        response = await client.get(target_url, params=request.query_params, headers=headers)
+        response = await client.get(target_url, params=request.query_params, headers=request.headers)
     
     # Return the response from the local service
     return Response(content=response.content, media_type=response.headers.get('content-type'))
