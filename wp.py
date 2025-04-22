@@ -30,8 +30,3 @@ def create_post(title, content, **kwargs):
         print("Failed to create post:", response.content)
     
     return response
-
-def check_token(token):
-    '''
-    Uses the OAuth endpoint to check if the access token is valid.
-    '''
