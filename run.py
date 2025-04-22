@@ -32,13 +32,11 @@ app.add_middleware(
 
 @app.get("/")
 async def read_root():
+    return reverse_proxy(config.local_django_url)
 
-    # Make a request to the localhost:8000 with the same parameters
-    async with httpx.AsyncClient() as client:
-        response = await client.get("http://localhost:8000")
-
-    # Return the response from the localhost:8000 service
-    return Response(content=response.text, media_type=response.headers.get('content-type'))
+@app.get("/chat")
+async def chat():
+    return reverse_proxy(config.local_openwebui_url)
 
 @app.get("/static/{file_path:path}")
 async def proxy_static(file_path: str, request: Request):
@@ -84,6 +82,14 @@ async def forecasts():
     data = data.rename(columns={'int': 'wind_speed'})  # Rename 'int' column to 'wind_speed'
     result = {storm : data[data['id'] == storm].to_dict(orient='records') for storm in set(data['id'])}
     return result
+
+async def reverse_proxy(local_url):
+    # Make a request to the localhost:8000 with the same parameters
+    async with httpx.AsyncClient() as client:
+        response = await client.get(local_url)
+
+    # Return the response from the localhost:8000 service
+    return Response(content=response.text, media_type=response.headers.get('content-type'))
 
 if __name__ == "__main__":
     # set things up according to tests
