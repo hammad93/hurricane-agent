@@ -29,7 +29,6 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
-#r = db.redis_client()
 
 @app.get("/")
 async def read_root():
