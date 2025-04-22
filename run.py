@@ -31,12 +31,26 @@ app.add_middleware(
 )
 
 @app.get("/")
-async def read_root(request: Request):
-    return await reverse_proxy(config.local_django_url, request)
+async def read_root():
 
-@app.get("/chat")
-async def chat(request: Request):
-    return await reverse_proxy(config.local_openwebui_url, request)
+    # Make a request to the localhost:8000 with the same parameters
+    async with httpx.AsyncClient() as client:
+        response = await client.get("http://localhost:8000")
+
+    # Return the response from the localhost:8000 service
+    return Response(content=response.text, media_type=response.headers.get('content-type'))
+
+@app.get("/static/{file_path:path}")
+async def proxy_static(file_path: str, request: Request):
+    # Construct the URL for the static file on localhost:7000
+    url = f"http://localhost:8000/static/{file_path}"
+
+    # Forward the request to the service at localhost:8000
+    async with httpx.AsyncClient() as client:
+        response = await client.get(url)
+
+    # Return the response content with appropriate content type
+    return Response(content=response.content, media_type=response.headers.get('content-type'))
 
 @app.get("/live-storms")
 async def get_live_storms():
@@ -70,24 +84,6 @@ async def forecasts():
     data = data.rename(columns={'int': 'wind_speed'})  # Rename 'int' column to 'wind_speed'
     result = {storm : data[data['id'] == storm].to_dict(orient='records') for storm in set(data['id'])}
     return result
-
-async def reverse_proxy(local_url: str, request: Request):
-    print(request.headers.get("Referer"))
-    # Determine if the request is for a static file
-    if request.url.path.startswith("/static/"):
-        # Construct the URL for the static file
-        file_path = request.url.path[len("/static/"):]  # Strip the "/static/" prefix
-        target_url = f"http://localhost:8000/static/{file_path}"
-    else:
-        # Construct the full URL for the request
-        target_url = f"{local_url}{request.url.path}"
-    
-    # Forward the request with the same query parameters and headers
-    async with httpx.AsyncClient() as client:
-        response = await client.get(target_url, params=request.query_params, headers=request.headers)
-    
-    # Return the response from the local service
-    return Response(content=response.content, media_type=response.headers.get('content-type'))
 
 if __name__ == "__main__":
     # set things up according to tests
