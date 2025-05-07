@@ -30,28 +30,6 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-@app.get("/")
-async def read_root():
-
-    # Make a request to the localhost:8000 with the same parameters
-    async with httpx.AsyncClient() as client:
-        response = await client.get(config.local_django_url)
-
-    # Return the response from the localhost:8000 service
-    return Response(content=response.text, media_type=response.headers.get('content-type'))
-
-@app.get("/static/{file_path:path}")
-async def proxy_static(file_path: str, request: Request):
-    # Construct the URL for the static file on localhost:7000
-    url = f"{config.local_django_url}/static/{file_path}"
-
-    # Forward the request to the service at localhost:8000
-    async with httpx.AsyncClient() as client:
-        response = await client.get(url)
-
-    # Return the response content with appropriate content type
-    return Response(content=response.content, media_type=response.headers.get('content-type'))
-
 @app.get("/live-storms")
 async def get_live_storms():
     """
@@ -88,5 +66,4 @@ async def forecasts():
 if __name__ == "__main__":
     # set things up according to tests
     test.setup()
-    uvicorn.run(app, host="0.0.0.0", port=443, workers=1,
-                ssl_keyfile='/root/privkey.pem', ssl_certfile='/root/fullchain.pem')
+    uvicorn.run(app, host="0.0.0.0", port=80, workers=1)
