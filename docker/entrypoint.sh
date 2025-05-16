@@ -13,7 +13,7 @@ python /hurricane-agent/download_models.py
 nohup tensorflow_model_server --model_base_path=/root/forecast --rest_api_port=9000 --model_name=hurricane 2>&1 &
 
 # run the API
-nohup python /hurricane-deploy/run.py > logs.txt &
+nohup python /hurricane-agent/run.py > logs.txt &
 
 # Setup a cron schedule
 echo "SHELL=/bin/bash
