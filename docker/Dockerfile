@@ -3,8 +3,6 @@ FROM continuumio/anaconda3
 # SMTP credentials
 
 COPY credentials.csv /root/
-COPY fullchain.pem /root/
-COPY privkey.pem /root/
 
 # Python additional requirements
 COPY requirements.txt /root/
