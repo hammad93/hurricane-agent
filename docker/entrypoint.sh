@@ -5,7 +5,7 @@ echo "Docker container has been started"
 declare -p | grep -Ev 'BASHOPTS|BASH_VERSINFO|EUID|PPID|SHELLOPTS|UID' > /container.env
 
 # setup git
- git config --local --add remote.origin.fetch +refs/heads/*:refs/remotes/origin/*
+git config --local --add remote.origin.fetch +refs/heads/*:refs/remotes/origin/*
 
 # run the tensorflow server
 python /hurricane-deploy/download_models.py
