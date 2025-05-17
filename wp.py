@@ -2,13 +2,14 @@ import requests
 from requests.auth import HTTPBasicAuth
 import test
 import os
+import config
 
 def create_post(title, content, **kwargs):
     '''
     Create wordpress post
     '''
     test.setup()
-    url = 'https://fluids.ai/wp-json/wp/v2/posts'
+    url = config.wp_create_post_url
     
     post = {
         'title': title,

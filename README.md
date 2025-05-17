@@ -40,7 +40,7 @@ This returns an object of the following form,
 
 1. Navigate to the `docker` directory in this repository
 2. Run the docker command, `sudo docker build --no-cache -t hurricane .` to install the deployment using docker
-3. Run the docker command, `sudo docker run -d --network=host hurricane` to activate software that will run email reports every hour
+3. Run the docker command, `sudo docker run -d -p 1337:1337 --name hurricane hurricane` to activate software that will run email reports every hour
 
 Note that the virtualized deployment utilizes the cron script, `0 * * * * python /hurricane-deploy/report.py >> /var/log/cron.log 2>&1`, to generate reports.
 

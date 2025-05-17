@@ -3,15 +3,13 @@ FROM continuumio/anaconda3
 # SMTP credentials
 
 COPY credentials.csv /root/
-COPY fullchain.pem /root/
-COPY privkey.pem /root/
 
 # Python additional requirements
 COPY requirements.txt /root/
 RUN pip install -r /root/requirements.txt
 
 # Add git repository
-RUN git clone --single-branch --branch main https://github.com/hammad93/hurricane-deploy.git
+RUN git clone --single-branch --branch main https://github.com/hammad93/hurricane-agent.git
 
 # Setup cron job
 RUN apt-get --allow-releaseinfo-change update && apt-get -y install cron
