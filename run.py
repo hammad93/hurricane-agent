@@ -19,7 +19,7 @@ import predict
 app = FastAPI(
     title="fluids API",
     description="A 100% independent and non-profit weather API providing weather data.",
-    openapi_version = '3.1.0'
+    root_path=f'/{config.mcp_uri}'
 )
 
 app.add_middleware(
