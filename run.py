@@ -18,9 +18,7 @@ import predict
 
 app = FastAPI(
     title="fluids API",
-    description="A 100% independent and non-profit weather API providing weather data.",
-    version="1.0.0",
-    swagger_ui_parameters={'openapi': '3.1.0'}
+    description="A 100% independent and non-profit weather API providing weather data."
 )
 
 app.add_middleware(
