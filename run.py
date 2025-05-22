@@ -5,7 +5,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field
 import config
 import db
-import chatgpt
+import chat
 import pandas as pd
 import traceback
 import os

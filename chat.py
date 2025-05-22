@@ -10,6 +10,9 @@ import json
 import os
 import config
 
+import test
+test.setup()
+
 
 def storm_forecast_prompts_sequentially(data, hours = [6, 12, 24, 48, 72, 96, 120]):
   prompt = Template('''Please provide  a forecast for $future hours in the future from the most recent time from the storm.
@@ -204,3 +207,23 @@ In JSON,
         }))
         print(prompt)
     return prompts
+
+def chat(message, token=os.environ["OPENWEBUI_TOKEN"], base_url = config['base_url'], model = config['gpt_model']):
+    url = f'{base_url}/api/chat/completions'
+    headers = {
+        'Authorization': f'Bearer {token}',
+        'Content-Type': 'application/json'
+    }
+    data = {
+      "model": model,
+      "messages": [
+        {
+          "role": "user",
+          "content": message
+        }
+      ]
+    }
+    response = requests.post(url, headers=headers, json=data)
+    result = response.json()
+    result['result'] = result['choices'][0]['message']['content']
+    return result

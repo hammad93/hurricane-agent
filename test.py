@@ -11,7 +11,7 @@ def ai_pipeline():
   - Text to speech
   '''
   # chatgpt forecasts
-  forecasts = requests.get(config.chatgpt_forecast_api)
+  forecasts = requests.get(config.chatgpt)
   print(f'ChatGPT forecasts: {forecasts.content}')
   
   # text to speech
@@ -43,6 +43,7 @@ def setup():
   os.environ['WP_PASS'] = get_var('user', 'pass')
   os.environ['AWS_ACCESS_KEY_ID'] = get_var('AWS_ACCESS_KEY_ID', 'pass')
   os.environ['AWS_SECRET_ACCESS_KEY'] = get_var('AWS_SECRET_ACCESS_KEY', 'pass')
+  os.environ['OPENWEBUI_TOKEN'] = get_var('openwebui', 'pass')
 
 
 def chatgpt_reflection_forecast_concurrent(model='gpt-3.5-turbo'):
