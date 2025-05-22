@@ -9,12 +9,12 @@ import chat
 import pandas as pd
 import traceback
 import os
-import redis
 import test
 import json
 import httpx
 import gc
 import predict
+import chat
 
 app = FastAPI(
     title="fluids API",
@@ -29,6 +29,10 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+class ChatRequest(BaseModel):
+    message: str = Field(description="The message to send to the chat model.")
+    token: str = Field(description="Open WebUI access token. Create an account here at https://nfc.ai/")
 
 @app.get("/live-storms")
 async def get_live_storms():
@@ -62,6 +66,27 @@ async def forecasts():
     data = data.rename(columns={'int': 'wind_speed'})  # Rename 'int' column to 'wind_speed'
     result = {storm : data[data['id'] == storm].to_dict(orient='records') for storm in set(data['id'])}
     return result
+
+@app.post('/chat')
+async def local_chat(chat_request: ChatRequest):
+    """
+    Interact with the local chat system.
+
+    Parameters:
+        message (str): The message to send to the chat system.
+        token (str): Optional authentication token.
+
+    Returns:
+        dict: A dictionary containing the chat response.
+
+    Example:
+        {
+            "message": "Hello, how are you?",
+            "response": "I'm good, thank you! How can I assist you today?"
+        }
+    """
+    result = chat.chat(chat_request.message, token=chat_request.token)
+    return {"message": chat_request.message, "response": result['result']}
 
 if __name__ == "__main__":
     # set things up according to tests
