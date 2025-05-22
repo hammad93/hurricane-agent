@@ -30,10 +30,6 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-class ChatRequest(BaseModel):
-    message: str = Field(description="The message to send to the chat model.")
-    token: str = Field(description="Open WebUI access token. Create an account here at https://nfc.ai/")
-
 @app.get("/live-storms")
 async def get_live_storms():
     """
@@ -68,7 +64,10 @@ async def forecasts():
     return result
 
 @app.post('/chat')
-async def local_chat(chat_request: ChatRequest):
+async def local_chat(
+    message: str,
+    token: str = None
+):
     """
     Interact with the local chat system.
 
@@ -85,8 +84,8 @@ async def local_chat(chat_request: ChatRequest):
             "response": "I'm good, thank you! How can I assist you today?"
         }
     """
-    result = chat.chat(chat_request.message, token=chat_request.token)
-    return {"message": chat_request.message, "response": result['result']}
+    result = chat.chat(message, token=token)
+    return {"message": message, "response": result['result']}
 
 if __name__ == "__main__":
     # set things up according to tests
