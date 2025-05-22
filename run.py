@@ -69,6 +69,7 @@ async def local_chat(
     token: str
 ):
     """
+    # Chat Endpoint
     Interact with the local chat system.
 
     Parameters:
@@ -85,6 +86,7 @@ async def local_chat(
         }
     """
     result = chat.chat(message, token=token)
+    print(result)
     return {"message": message, "response": result['result']}
 
 if __name__ == "__main__":
