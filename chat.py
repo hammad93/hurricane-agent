@@ -208,7 +208,7 @@ In JSON,
         print(prompt)
     return prompts
 
-def chat(message, token=os.environ["OPENWEBUI_TOKEN"], base_url = config['base_url'], model = config['gpt_model']):
+def chat(message, token=os.environ["OPENWEBUI_TOKEN"], base_url = config.base_url, model = config.gpt_model):
     url = f'{base_url}/api/chat/completions'
     headers = {
         'Authorization': f'Bearer {token}',
