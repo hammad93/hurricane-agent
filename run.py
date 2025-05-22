@@ -66,14 +66,14 @@ async def forecasts():
 @app.post('/chat')
 async def local_chat(
     message: str,
-    token: str = None
+    token: str
 ):
     """
     Interact with the local chat system.
 
     Parameters:
         message (str): The message to send to the chat system.
-        token (str): Optional authentication token.
+        token (str): Authentication token.
 
     Returns:
         dict: A dictionary containing the chat response.
