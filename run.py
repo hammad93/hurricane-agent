@@ -5,7 +5,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field
 import config
 import db
-import chatgpt
+import chat
 import pandas as pd
 import traceback
 import os
@@ -19,7 +19,7 @@ import predict
 app = FastAPI(
     title="fluids API",
     description="A 100% independent and non-profit weather API providing weather data.",
-    version="1.0.0",
+    root_path=f'/{config.mcp_uri}'
 )
 
 app.add_middleware(

@@ -50,9 +50,6 @@ The networking in on the host so there can be conflicts on a production server. 
 ## Output: Port 1337
 The container publishes a REST API on this port. Reference the API Link for more details.
 
-## Input: Port 8000
-The hurricane-map 3D visualization containerized app runs on this port but the API provides a secure reverse proxy for it.
-
 ## Tips & Tricks
 
 - Make sure there is enough swap space for the RAM. You can check with `free -m`
