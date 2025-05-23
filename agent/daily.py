@@ -1,5 +1,4 @@
 import pandas as pd
-import requests
 
 def transform_data(data):
     '''
@@ -7,13 +6,21 @@ def transform_data(data):
     ----------
     data
     '''
-    return pd.DataFrame(data)
+    return data.to_dict(orient='records')
 
-def create_report(data):
+def create_report(data, chat, prompt):
     '''
-    data is based on this query or similar
-    SELECT * FROM ingest_hash
-    WHERE time >= NOW() - INTERVAL '24 hours';
+    Parameters
+    ----------
+    data pandas.DataFrame
+      - Based on this PostgreSQL query or similar
+      - SELECT * FROM ingest_hash WHERE time >= NOW() - INTERVAL '24 hours';
+    chat Object
+      - A Python function (Object) that inputs 'message' and returns the response
+      from the LLM
+    prompt String Template
+      - This template takes in the data after it's processed and generates a report
+      from the LLM.
     '''
     result = {
         'BODY_TEXT': None,
@@ -21,24 +28,4 @@ def create_report(data):
         'RECIPIENTS': 'daily@fluids.ai',
         'SUBJECT': 'fluids hurricane agent: Daily Reports'
     }
-    return result
-
-def chat(message, token, base_url, model = '/data/phi-4.gguf'):
-    url = f'{base_url}/api/chat/completions'
-    headers = {
-        'Authorization': f'Bearer {token}',
-        'Content-Type': 'application/json'
-    }
-    data = {
-      "model": model,
-      "messages": [
-        {
-          "role": "user",
-          "content": message
-        }
-      ]
-    }
-    response = requests.post(url, headers=headers, json=data)
-    result = response.json()
-    result['result'] = result['choices'][0]['message']['content']
     return result

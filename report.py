@@ -4,6 +4,7 @@ import predict
 import update
 import datetime
 import config
+import chat
 import os
 import utils
 import test
@@ -11,6 +12,7 @@ import wp
 import sys
 import db
 import fire
+from string import Template
 
 from agent import hourly
 from agent import daily
@@ -62,10 +64,16 @@ class Report(object):
       print('Data ingested is not new.')
   
   def daily(self):
+    # Query PostgreSQL for the data ingested in the last 24 hours
     with open(config.daily_ingest_sql_path) as file:
       query = file.read()
     daily_data = db.query(query)
-    daily.create_report(daily_data)
+    # Open up prompt template stored in a .txt file
+    with open(config.daily_prompt_path, 'r') as file:
+        template_string = file.read()
+    template = Template(template_string)
+    
+    daily.create_report(data=daily_data, chat=chat.chat, prompt=template)
 
 if __name__ == '__main__':
   agent = Report()
