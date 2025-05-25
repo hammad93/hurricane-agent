@@ -7,3 +7,5 @@ forecasting tropical storms. Today is $timestamp. Include the following notifica
 - Any tropical storm that has reached at least a Category 1 on the Saffir Simpson scale
 - Any tropical storm that is forecasted to become a severe tropical storm (Category 3+)
 - Rapidly intensifying storms
+
+Use this to create a report and respond in HTML.
