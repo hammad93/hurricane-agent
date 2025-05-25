@@ -62,7 +62,7 @@ class Report(object):
       top_of_the_hour = datetime.datetime.now().replace(minute=0, second=0, microsecond=0).strftime("%Y-%m-%d %H")
       wp.create_post(f'fluids Hourly Weather Report: {top_of_the_hour}00 Zulu', hourly_report['BODY_HTML'])
     else :
-      print('Data ingested is not new.')
+      logging.info('Data ingested is not new.')
   
   def daily(self):
     # Query PostgreSQL for the data ingested in the last 24 hours

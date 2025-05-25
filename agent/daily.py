@@ -1,6 +1,7 @@
 import pandas as pd
 import datetime
 import logging
+import markdown
 
 def transform_data(data):
     '''
@@ -28,9 +29,11 @@ def create_report(data, chat, prompt):
     logging.info(message)
     llm_output = chat(message)
     logging.info(llm_output)
+    BODY_TEXT = llm_output['result']
+    BODY_HTML = markdown.markdown(BODY_TEXT)
     result = {
-        'BODY_TEXT': llm_output['result'],
-        'BODY_HTML': llm_output['result'],
+        'BODY_TEXT': BODY_TEXT,
+        'BODY_HTML': BODY_HTML,
         'RECIPIENTS': 'daily@fluids.ai',
         'SUBJECT': 'fluids hurricane agent: Daily Reports'
     }
