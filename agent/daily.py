@@ -1,4 +1,5 @@
 import pandas as pd
+import datetime
 
 def transform_data(data):
     '''
@@ -22,9 +23,11 @@ def create_report(data, chat, prompt):
       - This template takes in the data after it's processed and generates a report
       from the LLM.
     '''
+    message = prompt.substitute(daily_data=data, timestamp=datetime.datetime.now())
+    llm_output = chat(message)
     result = {
-        'BODY_TEXT': None,
-        'BODY_HTML': None,
+        'BODY_TEXT': llm_output,
+        'BODY_HTML': llm_output,
         'RECIPIENTS': 'daily@fluids.ai',
         'SUBJECT': 'fluids hurricane agent: Daily Reports'
     }

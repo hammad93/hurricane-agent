@@ -46,12 +46,16 @@ def setup():
   os.environ['OPENWEBUI_TOKEN'] = get_var('openwebui', 'pass')
 
 def tests():
+  '''
+  Failed tests can be done assessed with,
+  >>> if False in [x[0] for x in tests()]
+  '''
   def test_ok(url):
     response = requests.get(url)
     if not response.ok:
-      return False
+      return False, response
     else:
-      return response
+      return True, response.text
   results = []
   # check to see if fluids.ai is up
   results.append(test_ok(config.fluids_url))
@@ -62,7 +66,4 @@ def tests():
   # check to see if the 3D map is up
   results.append(test_ok(config.map_url))
   
-  if False in results:
-    return False
-  else:
-    return results
+  return results
