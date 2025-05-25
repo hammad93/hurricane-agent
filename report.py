@@ -78,7 +78,7 @@ class Report(object):
       'live-storms': requests.get(config.live_storms_api).json(),
       'forecasts': requests.get(config.current_forecasts_api).json()
     }
-    daily_report = daily.create_report(data=daily_data, chat=chat.chat, prompt=template)
+    daily_report = daily.create_report(data=daily_data, chat=chat.chat, prompt=template, tests=test.tests)
     self.email(daily_report)
 
 if __name__ == '__main__':
