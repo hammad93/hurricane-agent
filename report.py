@@ -13,6 +13,7 @@ import sys
 import db
 import fire
 from string import Template
+import requests
 
 from agent import hourly
 from agent import daily
@@ -67,12 +68,16 @@ class Report(object):
     # Query PostgreSQL for the data ingested in the last 24 hours
     with open(config.daily_ingest_sql_path) as file:
       query = file.read()
-    daily_data = db.query(query)
+    sql_data = db.query(query)
     # Open up prompt template stored in a .txt file
     with open(config.daily_prompt_path, 'r') as file:
         template_string = file.read()
     template = Template(template_string)
-    
+    daily_data = {
+      'sql_data': sql_data,
+      'live-storms': requests.get(config.live_storms_api).json(),
+      'forecasts': requests.get(config.current_forecasts_api).json()
+    }
     daily.create_report(data=daily_data, chat=chat.chat, prompt=template)
 
 if __name__ == '__main__':
