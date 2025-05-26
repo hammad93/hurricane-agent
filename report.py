@@ -19,7 +19,14 @@ from agent import hourly
 from agent import daily
 
 # Setup logs
-logging.basicConfig(filename='report.log', level=logging.DEBUG)
+logging.basicConfig(
+    handlers=[
+        logging.FileHandler('report.log'),
+        logging.StreamHandler()
+    ],
+    level=logging.DEBUG,
+    format='%(asctime)s - %(levelname)s - %(message)s'
+)
 
 class Report(object):
   def __init__(self):
