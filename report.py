@@ -65,6 +65,7 @@ class Report(object):
       logging.info('Data ingested is not new.')
   
   def daily(self):
+    logging.info('Starting daily agent through Report class.')
     # Query PostgreSQL for the data ingested in the last 24 hours
     with open(config.daily_ingest_sql_path) as file:
       query = file.read()
@@ -80,6 +81,7 @@ class Report(object):
     }
     daily_report = daily.create_report(data=daily_data, chat=chat.chat, prompt=template, tests=test.tests)
     self.email(daily_report)
+    logging.info('Daily agent is done.')
 
 if __name__ == '__main__':
   agent = Report()
