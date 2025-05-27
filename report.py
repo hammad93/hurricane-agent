@@ -14,6 +14,7 @@ import db
 import fire
 from string import Template
 import requests
+import time
 
 from agent import hourly
 from agent import daily
@@ -21,11 +22,12 @@ from agent import daily
 # Setup logs
 logging.basicConfig(
     handlers=[
-        logging.FileHandler('report.log'),
+        logging.FileHandler( # outputs to log file with timestamp
+          f'{config.agent_log_path}/report-{int(time.time())}.log'),
         logging.StreamHandler()
     ],
     level=logging.DEBUG,
-    format='%(asctime)s - %(levelname)s - %(message)s'
+    format=config.agent_log_format
 )
 
 class Report(object):
