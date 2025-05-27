@@ -39,7 +39,7 @@ This returns an object of the following form,
   - Copy the SSL certificates over to the docker directory for HTTPS
 
 1. Navigate to the `docker` directory in this repository
-2. Run the docker command, `sudo docker build --no-cache -t hurricane .` to install the deployment using docker
+2. Run the docker command, `sudo docker build --no-cache -t hurricane .` to install the deployment using docker. Optionally run `sudo docker builder prune`
 3. Run the docker command, `sudo docker run -d -p 1337:1337 --name hurricane hurricane` to activate software that will run email reports every hour
 
 Note that the virtualized deployment utilizes the cron script, `0 * * * * python /hurricane-deploy/report.py >> /var/log/cron.log 2>&1`, to generate reports.
