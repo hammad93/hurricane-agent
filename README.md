@@ -5,7 +5,7 @@ bundled algorithms for tropical storm forecasting. The deep learning approaches 
 
 ## API Link
 
-https://nfc.ai:1337/docs
+https://nfc.ai/mcp/docs
 
 ## Import most recent Atlantic tropical storms
 

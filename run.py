@@ -9,12 +9,12 @@ import chat
 import pandas as pd
 import traceback
 import os
-import redis
 import test
 import json
 import httpx
 import gc
 import predict
+import chat
 
 app = FastAPI(
     title="fluids API",
@@ -62,6 +62,32 @@ async def forecasts():
     data = data.rename(columns={'int': 'wind_speed'})  # Rename 'int' column to 'wind_speed'
     result = {storm : data[data['id'] == storm].to_dict(orient='records') for storm in set(data['id'])}
     return result
+
+@app.post('/chat')
+async def local_chat(
+    message: str,
+    token: str
+):
+    """
+    # Chat Endpoint
+    Interact with the local chat system.
+
+    Parameters:
+        message (str): The message to send to the chat system.
+        token (str): Authentication token.
+
+    Returns:
+        dict: A dictionary containing the chat response.
+
+    Example:
+        {
+            "message": "Hello, how are you?",
+            "response": "I'm good, thank you! How can I assist you today?"
+        }
+    """
+    result = chat.chat(message, token=token)
+    print(result)
+    return {"message": message, "response": result['result']}
 
 if __name__ == "__main__":
     # set things up according to tests

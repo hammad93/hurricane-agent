@@ -15,6 +15,7 @@ import config
 import agent
 from fastapi import HTTPException, Response
 import predict
+import sys
 
 def run_tts(timestamp=False):
     '''
@@ -405,3 +406,21 @@ def get_audio(filename: str):
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
+def get_script_dir():
+    """
+    Returns the directory of the script or the current working directory if
+    the script is executed in an interactive session.
+    """
+    if hasattr(sys, 'frozen'):
+        # The application is frozen (e.g., using PyInstaller).
+        # Get the path to the executable directory.
+        return os.path.dirname(sys.executable)
+    elif getattr(sys, 'frozen', False):
+        # Frozen via cx_Freeze or similar tools
+        return os.path.dirname(sys.executable)
+    elif hasattr(sys, '__file__'):
+        # Normal script execution.
+        return os.path.dirname(os.path.abspath(sys.__file__))
+    else:
+        # Interactive session or other scenarios.
+        return os.getcwd()

@@ -4,6 +4,7 @@ import predict
 import update
 import datetime
 import config
+import chat
 import os
 import utils
 import test
@@ -11,12 +12,23 @@ import wp
 import sys
 import db
 import fire
+from string import Template
+import requests
+import time
 
 from agent import hourly
 from agent import daily
 
 # Setup logs
-logging.basicConfig(filename='report.log', level=logging.DEBUG)
+logging.basicConfig(
+    handlers=[
+        logging.FileHandler( # outputs to log file with timestamp
+          f'{config.agent_log_path}/report-{int(time.time())}.log'),
+        logging.StreamHandler()
+    ],
+    level=logging.DEBUG,
+    format=config.agent_log_format
+)
 
 class Report(object):
   def __init__(self):
@@ -59,13 +71,26 @@ class Report(object):
       top_of_the_hour = datetime.datetime.now().replace(minute=0, second=0, microsecond=0).strftime("%Y-%m-%d %H")
       wp.create_post(f'fluids Hourly Weather Report: {top_of_the_hour}00 Zulu', hourly_report['BODY_HTML'])
     else :
-      print('Data ingested is not new.')
+      logging.info('Data ingested is not new.')
   
   def daily(self):
+    logging.info('Starting daily agent through Report class.')
+    # Query PostgreSQL for the data ingested in the last 24 hours
     with open(config.daily_ingest_sql_path) as file:
       query = file.read()
-    daily_data = db.query(query)
-    daily.create_report(daily_data)
+    sql_data = db.query(query)
+    # Open up prompt template stored in a .txt file
+    with open(config.daily_prompt_path, 'r') as file:
+        template_string = file.read()
+    template = Template(template_string)
+    daily_data = {
+      'sql_data': sql_data,
+      'live-storms': requests.get(config.live_storms_api).json(),
+      'forecasts': requests.get(config.current_forecasts_api).json()
+    }
+    daily_report = daily.create_report(data=daily_data, chat=chat.chat, prompt=template, tests=test.tests)
+    self.email(daily_report)
+    logging.info('Daily agent is done.')
 
 if __name__ == '__main__':
   agent = Report()
