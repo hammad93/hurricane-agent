@@ -1,9 +1,17 @@
-$daily_data
+# Tropical Storm AI Summary
 
-Please provide a summary of the data ingested, provided above, for the purposes of
-forecasting tropical storms. Today is $timestamp. Include the following notifications,
-- Warning if there has been no recent data ingested for at least 24 hours
-- There are no forecasts
-- Any tropical storm that has reached at least a Category 1 on the Saffir Simpson scale
-- Any tropical storm that is forecasted to become a severe tropical storm (Category 3+)
-- Rapidly intensifying storms
+Today's Date: `$timestamp`
+
+## Notifications
+
+- **Warning:** ❌ There has been no recent data ingested for at least 24 hours.
+- **No Forecasts:** ❌ There are no forecasts available.
+- **Category 1 or Higher Storms:** ❌ There is a tropical storm that has reached at least a Category 1 on the Saffir-Simpson scale.
+- **Severe Storms Forecasted:** ❌ A tropical storm is forecasted to become a severe storm (Category 3+ on the Saffir-Simpson scale).
+- **Rapidly Intensifying Storms:** ❌ There are storms that are rapidly intensifying.
+
+## Data Summary
+
+- **Daily Data Ingested:** `$daily_data`
+
+*Note: If a notification is present, it is marked with a ❌ at the beginning.*
