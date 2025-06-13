@@ -1,5 +1,9 @@
 # Tropical Storm AI Summary
 
+## Data Summary
+
+- **Daily Data Ingested:** `$daily_data`
+
 Today's Date: `$timestamp`
 
 ## Notifications
@@ -9,9 +13,5 @@ Today's Date: `$timestamp`
 - **Category 1 or Higher Storms:** ❌ There is a tropical storm that has reached at least a Category 1 on the Saffir-Simpson scale.
 - **Severe Storms Forecasted:** ❌ A tropical storm is forecasted to become a severe storm (Category 3+ on the Saffir-Simpson scale).
 - **Rapidly Intensifying Storms:** ❌ There are storms that are rapidly intensifying.
-
-## Data Summary
-
-- **Daily Data Ingested:** `$daily_data`
 
 *Note: If a notification is present, it is marked with a ❌ at the beginning.*
