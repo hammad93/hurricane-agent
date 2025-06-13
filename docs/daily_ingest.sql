@@ -1,4 +1,4 @@
-SELECT *
+SELECT data, time
 FROM
    ingest_hash
 WHERE
