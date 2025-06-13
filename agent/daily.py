@@ -35,7 +35,7 @@ def create_report(data, tests, chat, prompt):
       - This template takes in the data after it's processed and generates a report
       from the LLM.
     '''
-    message = prompt.substitute(daily_data=data, timestamp=datetime.datetime.now())
+    message = prompt.substitute(daily_data=transform_data(data), timestamp=datetime.datetime.now())
     logging.info(message)
     llm_output = chat(message)
     logging.info(llm_output)
