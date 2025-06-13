@@ -84,7 +84,7 @@ class Report(object):
         template_string = file.read()
     template = Template(template_string)
     daily_data = {
-      'sql_data': sql_data,
+      'sql_data': sql_data.to_dict(orient='records'),
       'live-storms': requests.get(config.live_storms_api).json(),
       'forecasts': requests.get(config.current_forecasts_api).json()
     }
