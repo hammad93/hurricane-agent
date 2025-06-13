@@ -3,6 +3,6 @@ authentication.json
 .idea*
 credentials.csv
 .DS_Store
-report.log
+*.log
 __pycache__
 __pycache__/*
