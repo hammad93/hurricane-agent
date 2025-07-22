@@ -12,7 +12,7 @@ import wp
 import sys
 import db
 import fire
-from string import Template
+import hurricane_net as hn
 import requests
 import time
 
@@ -57,7 +57,9 @@ class Report(object):
   def hourly(self, command =''):
     # Execute data pipeline
     data = update.nhc()
+    logging.info(data)
     global_data = update.global_pipeline()
+    logging.info(global_data)
     
     # Send notification, minimizing duplicate emails
     if global_data['unique'] or command == 'push': # command line to push the email even if not new
@@ -65,6 +67,7 @@ class Report(object):
       predict.global_forecast()
       # Send email
       hourly_report = hourly.create_report(data, global_data, predict, config.current_forecasts_api)
+      logging.info(hourly_report)
       self.email(hourly_report)
       
       # Create blog post
@@ -78,17 +81,18 @@ class Report(object):
     # Query PostgreSQL for the data ingested in the last 24 hours
     with open(config.daily_ingest_sql_path) as file:
       query = file.read()
+    logging.info(query)
     sql_data = db.query(query)
-    # Open up prompt template stored in a .txt file
-    with open(config.daily_prompt_path, 'r') as file:
-        template_string = file.read()
-    template = Template(template_string)
+    # Open up prompt template from hurricane_net repository
+    template = hn.prompt.daily_report
     daily_data = {
       'sql_data': sql_data.to_dict(orient='records'),
       'live-storms': requests.get(config.live_storms_api).json(),
       'forecasts': requests.get(config.current_forecasts_api).json()
     }
+    logging.info(daily_data)
     daily_report = daily.create_report(data=daily_data, chat=chat.chat, prompt=template, tests=test.tests)
+    logging.info(daily_report)
     self.email(daily_report)
     logging.info('Daily agent is done.')
 
