@@ -57,7 +57,9 @@ class Report(object):
   def hourly(self, command =''):
     # Execute data pipeline
     data = update.nhc()
+    logging.info(data)
     global_data = update.global_pipeline()
+    logging.info(global_data)
     
     # Send notification, minimizing duplicate emails
     if global_data['unique'] or command == 'push': # command line to push the email even if not new
@@ -65,6 +67,7 @@ class Report(object):
       predict.global_forecast()
       # Send email
       hourly_report = hourly.create_report(data, global_data, predict, config.current_forecasts_api)
+      logging.info(hourly_report)
       self.email(hourly_report)
       
       # Create blog post
