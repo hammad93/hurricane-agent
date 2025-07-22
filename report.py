@@ -12,7 +12,7 @@ import wp
 import sys
 import db
 import fire
-from string import Template
+import hurricane_net as hn
 import requests
 import time
 
@@ -78,17 +78,18 @@ class Report(object):
     # Query PostgreSQL for the data ingested in the last 24 hours
     with open(config.daily_ingest_sql_path) as file:
       query = file.read()
+    logging.info(query)
     sql_data = db.query(query)
-    # Open up prompt template stored in a .txt file
-    with open(config.daily_prompt_path, 'r') as file:
-        template_string = file.read()
-    template = Template(template_string)
+    # Open up prompt template from hurricane_net repository
+    template = hn.prompt.daily_report
     daily_data = {
       'sql_data': sql_data.to_dict(orient='records'),
       'live-storms': requests.get(config.live_storms_api).json(),
       'forecasts': requests.get(config.current_forecasts_api).json()
     }
+    logging.info(daily_data)
     daily_report = daily.create_report(data=daily_data, chat=chat.chat, prompt=template, tests=test.tests)
+    logging.info(daily_report)
     self.email(daily_report)
     logging.info('Daily agent is done.')
 

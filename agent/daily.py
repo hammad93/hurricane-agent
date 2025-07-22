@@ -14,7 +14,7 @@ def transform_data(data):
 def unit_tests(tests):
     results = tests()
     logging.info(results)
-    if False in [test[0] for test in results]:
+    if False in [test[0] for test in results] :
       return False, "❌"
     else:
       return True, "✅"
@@ -31,11 +31,11 @@ def create_report(data, tests, chat, prompt):
     chat Object
       - A Python function (Object) that inputs 'message' and returns the response
       from the LLM
-    prompt String Template
+    prompt LangChain PromptTemplate
       - This template takes in the data after it's processed and generates a report
       from the LLM.
     '''
-    message = prompt.substitute(daily_data=data, timestamp=datetime.datetime.now())
+    message = prompt.format(daily_data=data, timestamp=datetime.datetime.now())
     logging.info(message)
     llm_output = chat(message)
     logging.info(llm_output)
