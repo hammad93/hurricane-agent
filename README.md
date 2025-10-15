@@ -35,8 +35,7 @@ This returns an object of the following form,
         }
 
 ## Quickstart
-  - A **credentials.csv** is required for authentication of the SMTP server to send emails. This is stored in a secret gist.
-  - Copy the SSL certificates over to the docker directory for HTTPS
+  - A **credentials.csv** is required for authentication of the SMTP server to send emails.
 
 1. Navigate to the `docker` directory in this repository
 2. Run the docker command, `sudo docker build --no-cache -t hurricane .` to install the deployment using docker. Optionally run `sudo docker builder prune`
