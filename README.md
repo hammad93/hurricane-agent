@@ -89,6 +89,9 @@ https://gist.github.com/hammad93/2c9325aec16a03c9d6a9e17778040a07
 Create the archive ingest database,
 https://gist.github.com/hammad93/c22b484c120f5c605a516647a6b01f6b
 
+Create the forecast database,
+https://gist.github.com/hammad93/2782980a8c29e7a4f97a048b7778a371
+
 Remember to allow the port through the firewall.
 `sudo ufw allow 5432`
 
