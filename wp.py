@@ -20,7 +20,7 @@ def create_post(title, content, **kwargs):
     # Sending POST request to create a new post
     response = requests.post(
         url,
-        auth=HTTPBasicAuth('user', os.environ['WP_PASS']),
+        auth=HTTPBasicAuth(os.environ['WP_USER'], os.environ['WP_PASS']),
         json=post)
     
     # Checking response
