@@ -3,11 +3,29 @@ The code for the agentic AI is defined in this repository. It can include deploy
 bundled algorithms for tropical storm forecasting. The deep learning approaches to accomplish this is at
 <a href="https://github.com/hammad93/hurricane-net" target="_blank">hurricane-net</a>
 
+## Table of Contents
+
+1. [Quickstart](#quickstart)
+2. [API Link](#api-link)
+3. [Import Tropical Storms](#import-tropical-storms)
+4. [Ports](#ports)
+5. [Troubleshooting](#troubleshooting)
+6. [Database](#database)
+
+## Quickstart
+Please ensure the `.env` is available. To understand which variables are necessary, search `os.environ`
+
+1. Navigate to the `docker` directory in this repository
+2. Run the docker command, `sudo docker build --no-cache -t hurricane .` to install the deployment using docker. Optionally run `sudo docker builder prune`
+3. Run the docker command, `sudo docker run -d -p 1337:1337 --name hurricane hurricane` to activate software that will run email reports every hour
+
+Note that the virtualized deployment utilizes the cron script, `0 * * * * python /hurricane-deploy/report.py >> /var/log/cron.log 2>&1`, to generate reports.
+
 ## API Link
 
 https://nfc.ai/mcp/docs
 
-## Import most recent Atlantic tropical storms
+## Import Tropical Storms
 
 From this NHC resource described here, , we can import the most recent tropical
 storms using the following code.
@@ -34,22 +52,13 @@ This returns an object of the following form,
                 }
         }
 
-## Quickstart
-  - A **credentials.csv** is required for authentication of the SMTP server to send emails.
-
-1. Navigate to the `docker` directory in this repository
-2. Run the docker command, `sudo docker build --no-cache -t hurricane .` to install the deployment using docker. Optionally run `sudo docker builder prune`
-3. Run the docker command, `sudo docker run -d -p 1337:1337 --name hurricane hurricane` to activate software that will run email reports every hour
-
-Note that the virtualized deployment utilizes the cron script, `0 * * * * python /hurricane-deploy/report.py >> /var/log/cron.log 2>&1`, to generate reports.
-
 ## Ports
 The networking in on the host so there can be conflicts on a production server. Reference the following to get an understanding of what ports are being used by the container.
 
-## Output: Port 1337
+### Output: Port 1337
 The container publishes a REST API on this port. Reference the API Link for more details.
 
-## Tips & Tricks
+## Troubleshooting
 
 - Make sure there is enough swap space for the RAM. You can check with `free -m`
 - To get HTTPS, use https://certbot.eff.org/
@@ -91,10 +100,4 @@ https://gist.github.com/hammad93/c22b484c120f5c605a516647a6b01f6b
 Create the forecast database,
 https://gist.github.com/hammad93/2782980a8c29e7a4f97a048b7778a371
 
-Remember to allow the port through the firewall.
-`sudo ufw allow 5432`
-
-## Credentials
-
-The credentials in CSV format need to be in the `docker` directory with a filename `credentials.csv`
-
+Note that we can utilize localhost to serve the database.

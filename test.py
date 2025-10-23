@@ -26,24 +26,7 @@ def setup():
   Setup environment variables and other conditions similar to
   production
   '''
-  passwords = pd.read_csv(config.credentials_dir)
-  def get_var(var, col):
-    return passwords[passwords['user'] == var].iloc[0][col]
-  os.environ["OPENAI_API_KEY"] = get_var('openai', 'pass')
-  os.environ["OPENAI_API_BASE"] = get_var('openai', 'host')
-
-  # https://learn.microsoft.com/en-us/azure/developer/python/sdk/authentication-on-premises-apps
-  os.environ['AZURE_CLIENT_ID'] = get_var('azure_client', 'pass')
-  os.environ['AZURE_TENANT_ID'] = get_var('azure_tenant', 'pass')
-  os.environ['AZURE_CLIENT_SECRET'] = get_var('azure_key', 'pass')
-  os.environ['AZURE_CONTAINER_REGISTRY_PWD'] = get_var('acr_key', 'pass')
-  os.environ['AZURE_REDIS_KEY'] = get_var('redis', 'pass')
-  os.environ['AZURE_REDIS_HOST'] = get_var('redis', 'host')
-  os.environ['AZURE_REDIS_PORT'] = str(int(get_var('redis', 'port')))
-  os.environ['WP_PASS'] = get_var('user', 'pass')
-  os.environ['AWS_ACCESS_KEY_ID'] = get_var('AWS_ACCESS_KEY_ID', 'pass')
-  os.environ['AWS_SECRET_ACCESS_KEY'] = get_var('AWS_SECRET_ACCESS_KEY', 'pass')
-  os.environ['OPENWEBUI_TOKEN'] = get_var('openwebui', 'pass')
+  return tests()
 
 def tests():
   '''

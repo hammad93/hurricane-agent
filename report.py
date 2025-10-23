@@ -32,15 +32,13 @@ logging.basicConfig(
 
 class Report(object):
   def __init__(self):
-    self.SENDER = 'husmani@fluids.ai'
+    self.SENDER = os.environ['SMTP_USER']
     self.SENDERNAME = 'Hurricane AI'
     # SMTP Credentials
-    self.credentials_df = pd.read_csv(config.credentials_dir)
-    self.credentials = self.credentials_df.iloc[0]
-    self.USERNAME_SMTP = self.credentials['user']
-    self.PASSWORD_SMTP = self.credentials['pass']
-    self.HOST = self.credentials['host']
-    self.PORT = int(self.credentials['port'])
+    self.USERNAME_SMTP = os.environ['SMTP_USER']
+    self.PASSWORD_SMTP = os.environ['SMTP_PASS']
+    self.HOST = os.environ['SMTP_HOST']
+    self.PORT = int(os.environ['SMTP_PORT'])
   
   def email(self, report):
     utils.send_email(report['BODY_TEXT'],
