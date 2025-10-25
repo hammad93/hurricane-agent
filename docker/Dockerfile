@@ -1,9 +1,5 @@
 FROM continuumio/anaconda3
 
-# SMTP credentials
-
-COPY credentials.csv /root/
-
 # Python additional requirements
 COPY requirements.txt /root/
 RUN pip install -r /root/requirements.txt
