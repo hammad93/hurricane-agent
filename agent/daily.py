@@ -35,7 +35,17 @@ def create_report(data, tests, chat, prompt):
       - This template takes in the data after it's processed and generates a report
       from the LLM.
     '''
-    message = prompt.format(daily_data=data, timestamp=datetime.datetime.now())
+
+    # clean data
+    live_storms = data['live-storms']
+    live_storms = [{y: x[y] for y in ['id', 'time', 'wind_speed_mph']} for x in live_storms]
+    print(live_storms)
+    forecasts = data['forecasts']
+    forecasts = {x : [{z: y[z] for z in ['id', 'time', 'forecast_time', 'wind_speed']} for y in forecasts[x]] for x in forecasts}
+    print(forecasts)
+    print(data['sql_data']) # not used
+    daily_data = f"Live Storms:\n\n{live_storms}\n\nForecasts:\nWind Speed is in knots\n\n{forecasts}"
+    message = prompt.format(daily_data=daily_data, timestamp=datetime.datetime.now())
     logging.info(message)
     llm_output = chat(message)
     logging.info(llm_output)
