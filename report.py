@@ -104,7 +104,7 @@ class Report(object):
       'storms': storms,
       'forecasts': forecasts
     }
-    prompts = chat.get_prompts(storms)
+    prompts = chat.get_prompts(storms[['id', 'time', 'lat', 'lon', 'wind_speed']])
     five_min_report = five_min.create_report(data=data, chat=chat.chat, prompts=prompts, db=db)
     if five_min_report:
       logging.info(five_min_report)

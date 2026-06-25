@@ -1,8 +1,9 @@
 import pandas as pd
 import datetime
 import logging
+import pprint
 
-def create_report(data, tests, chat, prompts, db):
+def create_report(data, chat, prompts, db):
     '''
     Parameters
     ----------
@@ -18,7 +19,7 @@ def create_report(data, tests, chat, prompts, db):
     
     '''
     storm_ids = set(data['storms']['id'])
-    forecasted = set(data['forecasts']['id'])
+    forecasted = data['forecasts'][data['forecasts']['model'] != 'Linear Model by fluids']['id']
     todos = [id for id in storm_ids if id not in forecasted]
     todo = todos[0] # only do one at a time
     for p in prompts:
@@ -26,6 +27,7 @@ def create_report(data, tests, chat, prompts, db):
             prompt = p[0]
     logging.info(prompt)
     llm_output = chat(prompt)
-    logging.info(llm_output)
+    response = llm_output['result']
+    logging.info(pprint.pprint(response))
     return False
 
