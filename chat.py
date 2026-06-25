@@ -1,3 +1,7 @@
+'''
+A collection of utility functions related to chat completions for large
+language models
+'''
 from string import Template
 from datetime import timedelta
 import dateutil
@@ -13,8 +17,27 @@ import config
 import test
 test.setup()
 
+def chat(message, token=os.environ["OPENWEBUI_TOKEN"], base_url = config.base_url, model = config.gpt_model):
+    url = f'{base_url}/api/chat/completions'
+    headers = {
+        'Authorization': f'Bearer {token}',
+        'Content-Type': 'application/json'
+    }
+    data = {
+      "model": model,
+      "messages": [
+        {
+          "role": "user",
+          "content": message
+        }
+      ]
+    }
+    response = requests.post(url, headers=headers, json=data)
+    result = response.json()
+    result['result'] = result['choices'][0]['message']['content']
+    return result
 
-def storm_forecast_prompts_sequentially(data, hours = [6, 12, 24, 48, 72, 96, 120]):
+def storm_forecast_prompts_sequentially_reflection(data, hours = [6, 12, 24, 48, 72, 96, 120]):
   prompt = Template('''Please provide  a forecast for $future hours in the future from the most recent time from the storm.
   This forecast should be based on historical knowledge which includes but is not limited to storms with similar tracks and
   intensities, time of year of the storm, geographical coordinates, and climate change that may have occured since your
@@ -126,6 +149,7 @@ def chatgpt_forecast(prompt, model_version, retries=10):
         except Exception as e:
             retries = retries - 1
             print(f"Retries left: {retries}, error message: {e}")
+
 def transform_chatgpt_forecasts(text, metadata):
     '''
     Cleans the response from ChatGPT
@@ -152,13 +176,30 @@ def get_live_storms():
         The records include the columns id, time, lat, lon, wind_speed
     '''
     # make the request for live data
-    response = requests.get(f"{config.api_url}live-storms")
+    response = requests.get(config.live_storms_api)
     if response :
         data = response.json()
     else :
         print(f'There was an error getting live storms, {response.content}')
         return response
     return pd.DataFrame(data)
+
+def get_forecasts():
+    '''
+    Based on the REST API endpoint, this function makes the request and returns
+    the data in a DataFrame
+    '''
+    response = requests.get(config.current_forecasts_api)
+    if response :
+        data = response.json()
+    else :
+        print(f'There was an error getting forecasts, {response.content}')
+        return response
+    result = []
+    for storm in data:
+        result.extend(data[storm])
+    return result
+
 
 def get_prompts(df, historical_limit = 5, forecast_times = [12, 24, 36, 48, 72]):
     '''
@@ -207,26 +248,6 @@ In JSON,
         }))
         print(prompt)
     return prompts
-
-def chat(message, token=os.environ["OPENWEBUI_TOKEN"], base_url = config.base_url, model = config.gpt_model):
-    url = f'{base_url}/api/chat/completions'
-    headers = {
-        'Authorization': f'Bearer {token}',
-        'Content-Type': 'application/json'
-    }
-    data = {
-      "model": model,
-      "messages": [
-        {
-          "role": "user",
-          "content": message
-        }
-      ]
-    }
-    response = requests.post(url, headers=headers, json=data)
-    result = response.json()
-    result['result'] = result['choices'][0]['message']['content']
-    return result
 
 
 def chatgpt_reflection_forecast_concurrent(model='gpt-3.5-turbo'):
