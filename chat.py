@@ -83,7 +83,7 @@ def msg_to_obj(text, delimiters = ('{', '}')):
   # Extract the JSON string from the text
   json_string = text[start_index:end_index]
   print(json_string)
-  return json_string
+  return json.loads(json_string)
 
 def chatgpt_forecast_live(model_version):
     '''

@@ -2,8 +2,10 @@ import pandas as pd
 import datetime
 import logging
 import pprint
+from sqlalchemy import MetaData, Table
+import datetime
 
-def create_report(data, chat, prompts, db):
+def create_report(data, chat, prompts, db, config):
     '''
     Parameters
     ----------
@@ -19,7 +21,8 @@ def create_report(data, chat, prompts, db):
     
     '''
     storm_ids = set(data['storms']['id'])
-    forecasted = data['forecasts'][data['forecasts']['model'] != 'Linear Model by fluids']['id']
+    forecasts_data = data['forecasts']
+    forecasted = forecasts_data[forecasts_data['model'] != 'Linear Model by fluids']['id']
     todos = [id for id in storm_ids if id not in forecasted]
     todo = todos[0] # only do one at a time
     for p in prompts:
@@ -29,5 +32,35 @@ def create_report(data, chat, prompts, db):
     llm_output = chat(prompt)
     response = llm_output['result']
     logging.info(pprint.pprint(response))
+    forecasts = chat.msg_to_ob(response)
+    forecasts_hash = hash(frozenset(forecasts.items()))
+    forecasts_data['time'] = pd.to_datetime(forecasts_data['time'])
+    forecasts_start = forecasts_data[forecasts_data['id'] == todo].sort_values(by='time', ascending=False)['time'][0]
+    forecast_table = []
+    for forecast in forecasts:
+      forecast_table.append({
+          'model': config.gpt_model,
+          'id': todo,
+          'forecast_time': forecasts_start + datetime.timedelta(hours=forecast['forecast']),
+          'time': forecasts_start,
+          'trans_time': datetime.datetime.now().isoformat(),
+          'hash': forecasts_hash,
+          'lat': forecast['lat'],
+          'lon': forecast['lon'],
+          'int': float(forecast['wind_speed'])
+      })
+    # process database and SQL for archiving forecasts
+    engine = db.get_engine()
+    metadata = MetaData()
+    metadata.reflect(bind=engine)
+    table = metadata.tables[config.forecasts_archive_table]
+    db.query(q = (table.insert(), forecast_table), write = True)
+    # process database and SQL for live forecasts
+    engine = db.get_engine()
+    metadata = MetaData()
+    metadata.reflect(bind=engine)
+    table_name = config.forecasts_live_table
+    table = metadata.tables[table_name]
+    db.query(q = (table.insert(), forecast_table), write = True)
     return False
 
