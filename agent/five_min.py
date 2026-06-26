@@ -29,13 +29,13 @@ def create_report(data, chat, prompts, db, config):
         if p[1]['storm_id'] == todo:
             prompt = p[0]
     logging.info(prompt)
-    llm_output = chat(prompt)
+    llm_output = chat.chat(prompt)
     response = llm_output['result']
     logging.info(pprint.pprint(response))
-    forecasts = chat.msg_to_ob(response)
-    forecasts_hash = hash(frozenset(forecasts.items()))
+    forecasts = chat.msg_to_obj(response, delimiters=('[',']'))
+    forecasts_hash = hash(str(forecasts))
     forecasts_data['time'] = pd.to_datetime(forecasts_data['time'])
-    forecasts_start = forecasts_data[forecasts_data['id'] == todo].sort_values(by='time', ascending=False)['time'][0]
+    forecasts_start = list(forecasts_data[forecasts_data['id'] == todo].sort_values(by='time', ascending=False)['time'])[0]
     forecast_table = []
     for forecast in forecasts:
       forecast_table.append({
