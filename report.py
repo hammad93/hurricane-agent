@@ -18,6 +18,7 @@ import time
 
 from agent import hourly
 from agent import daily
+from agent import five_min
 
 # Setup logs
 logging.basicConfig(
@@ -81,18 +82,34 @@ class Report(object):
       query = file.read()
     logging.info(query)
     sql_data = db.query(query)
-    # Open up prompt template from hurricane_net repository
-    template = hn.prompt.daily_report
     daily_data = {
       'sql_data': sql_data.to_dict(orient='records'),
       'live-storms': requests.get(config.live_storms_api).json(),
       'forecasts': requests.get(config.current_forecasts_api).json()
     }
     logging.info(daily_data)
+    # Open up prompt template from hurricane_net repository
+    template = hn.prompt.daily_report
     daily_report = daily.create_report(data=daily_data, chat=chat.chat, prompt=template, tests=test.tests)
     logging.info(daily_report)
     self.email(daily_report)
     logging.info('Daily agent is done.')
+
+  def five_min(self):
+    logging.info('Started 5 Minute AI Agent through Report class.')
+    # get live storms and forecasts
+    storms = chat.get_live_storms()
+    forecasts = chat.get_forecasts()
+    data = {
+      'storms': storms,
+      'forecasts': forecasts
+    }
+    prompts = chat.get_prompts(storms[['id', 'time', 'lat', 'lon', 'wind_speed']])
+    five_min_report = five_min.create_report(data=data, chat=chat, prompts=prompts, db=db, config=config)
+    if five_min_report:
+      logging.info(five_min_report)
+      self.email(five_min_report)
+    logging.info('5 Minute Agent is done.')
 
 if __name__ == '__main__':
   agent = Report()

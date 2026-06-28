@@ -27,7 +27,7 @@ def create_report(data, tests, chat, prompt):
       - Based on this PostgreSQL query or similar
       - SELECT * FROM ingest_hash WHERE time >= NOW() - INTERVAL '24 hours';
     tests Object
-      - A Python function (Object) that runs unit tests with no input
+      - A Python function (Object) that runs unit tests for the daily report
     chat Object
       - A Python function (Object) that inputs 'message' and returns the response
       from the LLM
