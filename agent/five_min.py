@@ -25,6 +25,9 @@ def create_report(data, chat, prompts, db, config):
     forecasted = set(forecasts_data[forecasts_data['model'] != 'Linear Model by fluids']['id'])
     todos = [id for id in storm_ids if id not in forecasted]
     logging.info(f"Live: {storm_ids}\nForecasted: {forecasted}\nPending forecasts for {todos}")
+    if len(todos) < 1:
+        logging.info("Noting to do")
+        return False
     todo = todos[0] # only do one at a time
     for p in prompts:
         if p[1]['storm_id'] == todo:
