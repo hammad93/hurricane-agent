@@ -22,9 +22,9 @@ def create_report(data, chat, prompts, db, config):
     '''
     storm_ids = set(data['storms']['id'])
     forecasts_data = data['forecasts']
-    forecasted = forecasts_data[forecasts_data['model'] != 'Linear Model by fluids']['id']
+    forecasted = set(forecasts_data[forecasts_data['model'] != 'Linear Model by fluids']['id'])
     todos = [id for id in storm_ids if id not in forecasted]
-    logging.info(f"Pending forecasts for {todos}")
+    logging.info(f"Live: {storm_ids}\nForecasted: {forecasted}\nPending forecasts for {todos}")
     todo = todos[0] # only do one at a time
     for p in prompts:
         if p[1]['storm_id'] == todo:
