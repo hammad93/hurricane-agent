@@ -24,6 +24,7 @@ def create_report(data, chat, prompts, db, config):
     forecasts_data = data['forecasts']
     forecasted = forecasts_data[forecasts_data['model'] != 'Linear Model by fluids']['id']
     todos = [id for id in storm_ids if id not in forecasted]
+    logging.info(f"Pending forecasts for {todos}")
     todo = todos[0] # only do one at a time
     for p in prompts:
         if p[1]['storm_id'] == todo:
@@ -34,7 +35,6 @@ def create_report(data, chat, prompts, db, config):
     logging.info(pprint.pprint(response))
     forecasts = chat.msg_to_obj(response, delimiters=('[',']'))
     forecasts_hash = hash(str(forecasts))
-    forecasts_data['time'] = pd.to_datetime(forecasts_data['time'])
     forecasts_start = list(forecasts_data[forecasts_data['id'] == todo].sort_values(by='time', ascending=False)['time'])[0]
     forecast_table = []
     for forecast in forecasts:

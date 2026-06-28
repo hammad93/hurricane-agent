@@ -198,7 +198,9 @@ def get_forecasts():
     result = []
     for storm in data:
         result.extend(data[storm])
-    return pd.DataFrame(result)
+    df = pd.DataFrame(result)
+    df['time'] = pd.to_datetime(df['time'])
+    return df
 
 
 def get_prompts(df, historical_limit = 5, forecast_times = [12, 24, 36, 48, 72]):
