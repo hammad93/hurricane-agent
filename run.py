@@ -91,5 +91,5 @@ async def local_chat(
 
 if __name__ == "__main__":
     # set things up according to tests
-    test.setup()
+    # test.setup()
     uvicorn.run(app, host="0.0.0.0", port=1337, workers=1)
