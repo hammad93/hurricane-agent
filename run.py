@@ -40,8 +40,12 @@ async def get_live_storms():
               with keys: id, time, lat, lon, and int.
     """
     gc.collect()
-    data = db.query("SELECT * FROM hurricane_live")
-    data['time'] = data['time'].astype(str)  # Convert 'time' column to string
+    data = db.query("""
+        SELECT * FROM hurricane_live
+            ORDER BY time ASC""")
+    # postgres stores timestamp data types as UTC time zone
+    data['time'] = pd.to_datetime(data["time"], utc=True)
+    data['time'] = data["time"].dt.strftime("%Y-%m-%dT%H:%M:%S%z") 
     data = data.rename(columns={'int': 'wind_speed'})  # Rename 'int' column to 'wind_speed'
     storms = data.to_dict(orient="records")
     for storm in storms:
@@ -57,8 +61,11 @@ async def forecasts():
     Reference predict.forecast_storm_with_great_circle
     '''
     gc.collect()
-    data = db.query("SELECT * FROM forecasts_live")
-    data['time'] = data['time'].astype(str)  # Convert 'time' column to string
+    data = db.query("""
+        SELECT * FROM forecasts_live
+            ORDER BY time ASC""")
+    data['time'] = pd.to_datetime(data["time"], utc=True)
+    data['time'] = data["time"].dt.strftime("%Y-%m-%dT%H:%M:%S%z") # timezone aware (UTC)
     data = data.rename(columns={'int': 'wind_speed'})  # Rename 'int' column to 'wind_speed'
     result = {storm : data[data['id'] == storm].to_dict(orient='records') for storm in set(data['id'])}
     return result
