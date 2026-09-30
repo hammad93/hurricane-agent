@@ -9,8 +9,8 @@ cd /hurricane-agent/
 git config --local --add remote.origin.fetch +refs/heads/*:refs/remotes/origin/*
 
 # run the tensorflow server
-python /hurricane-agent/download_models.py
-nohup tensorflow_model_server --model_base_path=/root/forecast --rest_api_port=9000 --model_name=hurricane 2>&1 &
+# python /hurricane-agent/download_models.py
+# nohup tensorflow_model_server --model_base_path=/root/forecast --rest_api_port=9000 --model_name=hurricane 2>&1 &
 
 # run the API
 nohup python /hurricane-agent/run.py > logs.txt &
