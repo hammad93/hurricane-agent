@@ -16,12 +16,12 @@ git config --local --add remote.origin.fetch +refs/heads/*:refs/remotes/origin/*
 nohup python /hurricane-agent/run.py > logs.txt &
 
 # Setup a cron schedule
-echo "SHELL=/bin/bash
-BASH_ENV=/container.env
-0 * * * * python /hurricane-agent/report.py hourly >> /var/log/cron.log 2>&1
-0 5 * * * python /hurricane-agent/report.py daily >> /var/log/cron.log 2>&1
-*/5 * * * * python /hurricane-agent/report.py five_min >> /var/log/cron.log 2>&1
-# This extra line makes it a valid cron" > scheduler.txt
+# echo "SHELL=/bin/bash
+# BASH_ENV=/container.env
+# 0 * * * * python /hurricane-agent/report.py hourly >> /var/log/cron.log 2>&1
+# 0 5 * * * python /hurricane-agent/report.py daily >> /var/log/cron.log 2>&1
+# */5 * * * * python /hurricane-agent/report.py five_min >> /var/log/cron.log 2>&1
+# # This extra line makes it a valid cron" > scheduler.txt
 
-crontab scheduler.txt
-cron -f
+# crontab scheduler.txt
+# cron -f
