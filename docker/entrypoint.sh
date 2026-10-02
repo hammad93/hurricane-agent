@@ -25,3 +25,6 @@ nohup python /hurricane-agent/run.py > logs.txt &
 
 # crontab scheduler.txt
 # cron -f
+
+# keep container running
+tail -f /dev/null
